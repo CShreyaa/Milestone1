@@ -36,7 +36,7 @@ const Order = mongoose.model('Order', OrderSchema);
 
 const app = express();
 
-mongoose.connect('mongodb+srv://your_connection_string_here');
+mongoose.connect('mongodb+srv://Food:LWOxfaAXVdTdqtbf@cluster0.quulguw.mongodb.net/');
 
 const db = mongoose.connection;
 
