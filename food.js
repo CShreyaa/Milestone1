@@ -1,9 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import passport from 'passport';
-import GoogleStrategy from 'passport-google-oauth20';
-import session from 'express-session';
 import NodeCache from 'node-cache';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
@@ -46,59 +43,8 @@ db.once('open', () => {
     console.log('MongoDB connected');
 });
 
-app.use(
-    session({
-        secret: 'ascvi',
-        resave: false,
-        saveUninitialized: true
-    })
-);
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Passport configuration
-passport.use(
-    new GoogleStrategy(
-        {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:3000/auth/google/callback'
-        },
-        async (accessToken, refreshToken, profile, cb) => {
-            try {
-                console.log(accessToken);
-                console.log(profile);
-                // Handle user creation and retrieval
-            } catch (err) {
-                return cb(err);
-            }
-        }
-    )
-);
-
-passport.serializeUser((user, cb) => {
-    cb(null, user);
-});
-
-passport.deserializeUser((obj, cb) => {
-    cb(null, obj);
-});
-
-// Routes
-
-app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-app.get(
-    '/auth/google/callback',
-    passport.authenticate('google', {
-        successRedirect: '/dashboard',
-        failureRedirect: '/login'
-    })
-);
 
 // CRUD operations for Food
 
@@ -123,8 +69,6 @@ app.get('/api/food', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-// Implement endpoints for food update and deletion
 
 // Implement endpoint for placing orders
 app.post('/api/order', async (req, res) => {
